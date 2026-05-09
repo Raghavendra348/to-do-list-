@@ -1,74 +1,62 @@
-const taskInput = document.getElementById("taskInput");
-const addBtn = document.getElementById("addBtn");
-const taskList = document.getElementById("taskList");
+const studentList = document.getElementById("studentList");
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let students = JSON.parse(localStorage.getItem("students")) || [];
 
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+function displayStudents() {
+  studentList.innerHTML = "";
 
-function displayTasks() {
-  taskList.innerHTML = "";
+  students.forEach((student, index) => {
+    const div = document.createElement("div");
 
-  tasks.forEach((task, index) => {
-    const li = document.createElement("li");
+    div.classList.add("student-card");
 
-    if (task.completed) {
-      li.classList.add("completed");
-    }
+    div.innerHTML = `
+      <h3>${student.name}</h3>
+      <p><strong>Roll No:</strong> ${student.roll}</p>
+      <p><strong>Department:</strong> ${student.department}</p>
 
-    li.innerHTML = `
-      <span>${task.text}</span>
-
-      <div class="task-buttons">
-        <button class="complete-btn" onclick="toggleTask(${index})">
-          ${task.completed ? "Undo" : "Done"}
-        </button>
-
-        <button class="delete-btn" onclick="deleteTask(${index})">
-          Delete
-        </button>
-      </div>
+      <button class="delete-btn" onclick="deleteStudent(${index})">
+        Delete
+      </button>
     `;
 
-    taskList.appendChild(li);
+    studentList.appendChild(div);
   });
 }
 
-function addTask() {
-  const text = taskInput.value.trim();
+function addStudent() {
+  const name = document.getElementById("name").value.trim();
+  const roll = document.getElementById("roll").value.trim();
+  const department = document.getElementById("department").value.trim();
 
-  if (text === "") {
-    alert("Please enter a task");
+  if (name === "" || roll === "" || department === "") {
+    alert("Please fill all fields");
     return;
   }
 
-  tasks.push({
-    text: text,
-    completed: false
-  });
+  const student = {
+    name,
+    roll,
+    department
+  };
 
-  saveTasks();
-  displayTasks();
+  students.push(student);
 
-  taskInput.value = "";
+  localStorage.setItem("students", JSON.stringify(students));
+
+  displayStudents();
+
+  document.getElementById("name").value = "";
+  document.getElementById("roll").value = "";
+  document.getElementById("department").value = "";
 }
 
-function toggleTask(index) {
-  tasks[index].completed = !tasks[index].completed;
+function deleteStudent(index) {
+  students.splice(index, 1);
 
-  saveTasks();
-  displayTasks();
+  localStorage.setItem("students", JSON.stringify(students));
+
+  displayStudents();
 }
 
-function deleteTask(index) {
-  tasks.splice(index, 1);
-
-  saveTasks();
-  displayTasks();
-}
-
-addBtn.addEventListener("click", addTask);
-
-displayTasks();
+displayStudents();
